@@ -51,6 +51,8 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     console.log(err)
   }
   const parsedData = data.split('\n\n')
+  const REQUIRED_INFO = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
+
   for (let i = 0; i < parsedData.length; i++) {
     parsedData[i] = parsedData[i].split('\n')
     const placeholder = []
@@ -60,5 +62,16 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     }
     parsedData[i] = placeholder
   }
-  console.log(parsedData)
+
+  let validPassports = 0
+
+  for (let i = 0; i < parsedData.length; i++) {
+    let count = 0
+    for (let j = 0; j < parsedData[i].length; j++) {
+      if (REQUIRED_INFO.includes(parsedData[i][j].substring(0,3))) count++
+    }
+    if (count === REQUIRED_INFO.length) validPassports++
+  }
+
+  console.log(validPassports)
 })
