@@ -91,25 +91,32 @@ In the above example, these slopes would find 2, 7, 3, 4, and 2 tree(s) respecti
 What do you get if you multiply together the number of trees encountered on each of the listed slopes?
 */
 
-const fs = require('fs')
-
 fs.readFile('./input.txt', 'utf8', (err, data) => {
   if (err) {
     console.log(err)
   }
   const parsedData = data.split('\n')
-  const dy = 1
-  const dx = 3
+  const dy = [1,1,1,1,2]
+  const dx = [1,3,5,7,1]
   const REPEATING_WIDTH = parsedData[0].length
-  let x = 0
-  let y = 0
-  let count = 0
 
-  while (y < parsedData.length) {
-    if (parsedData[y][x % REPEATING_WIDTH] === '#') count++
-    y += dy
-    x += dx
+  let product
+
+  for (let i = 0; i < dy.length; i++) {
+    let x = 0
+    let y = 0
+    let count = 0
+    while (y < parsedData.length) {
+      if (parsedData[y][x % REPEATING_WIDTH] === '#') count++
+      y += dy[i]
+      x += dx[i]
+    }
+    if (!product) {
+      product = count
+    } else {
+      product *= count
+    }
   }
 
-  console.log(count)
+  console.log(product)
 })
