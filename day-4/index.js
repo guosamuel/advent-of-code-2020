@@ -73,7 +73,7 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     if (count === REQUIRED_INFO.length) validPassports++
   }
 
-  console.log(validPassports)
+  // console.log(validPassports)
 })
 
 /*
@@ -197,9 +197,9 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
 
   function validateHCL(color) {
     if (color[0] !== '#' || color.length !== 7) return false
-    const regex = '012345679abcdef'
+    const regex = '0123456789abcdef'
     for (let i = 1; i < color.length; i++) {
-      if (!regex.includes(color[0])) return false
+      if (!regex.includes(color[i])) return false
     }
     return true
   }
@@ -221,10 +221,12 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
   for (let i = 0; i < parsedData.length; i++) {
     let count = 0
     for (let j = 0; j < parsedData[i].length; j++) {
-      if (REQUIRED_INFO.includes(parsedData[i][j].substring(0,3))) count++
+      const field = parsedData[i][j].substring(0,3)
+      const data = parsedData[i][j].substring(4)
+      if (REQUIRED_INFO.includes(field) && validateFunctions[field](data)) count++
     }
     if (count === REQUIRED_INFO.length) validPassports++
   }
 
-  console.log(parsedData)
+  console.log(validPassports)
 })
