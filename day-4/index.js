@@ -197,11 +197,8 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
 
   function validateHCL(color) {
     if (color[0] !== '#' || color.length !== 7) return false
-    const regex = '0123456789abcdef'
-    for (let i = 1; i < color.length; i++) {
-      if (!regex.includes(color[i])) return false
-    }
-    return true
+    const regex = /[a-f0-9]/
+    return regex.test(color)
   }
 
   function validateECL(color) {
@@ -211,11 +208,8 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
 
   function validatePID(id) {
     if (id.length !== 9) return false
-    const regex = '0123456789'
-    for (let i = 0; i < id.length; i++) {
-      if (!regex.includes(id[i])) return false
-    }
-    return true
+    const regex = /[0-9]/
+    return regex.test(id)
   }
 
   for (let i = 0; i < parsedData.length; i++) {
