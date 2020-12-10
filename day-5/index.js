@@ -75,5 +75,63 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     maxID = Math.max(maxID, id)
   }
 
-  console.log(maxID)
+  // console.log(maxID)
+})
+
+/*
+--- Part Two ---
+Ding! The "fasten seat belt" signs have turned on. Time to find your seat.
+
+It's a completely full flight, so your seat should be the only missing boarding pass in your list. However, there's a catch: some of the seats at the very front and back of the plane don't exist on this aircraft, so they'll be missing from your list as well.
+
+Your seat wasn't at the very front or back, though; the seats with IDs +1 and -1 from yours will be in your list.
+
+What is the ID of your seat?
+*/
+
+fs.readFile('./input.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.log(err)
+  }
+  const parsedData = data.split("\n")
+
+  function calculateRow(row) {
+    let lower = 0
+    let higher = 127
+    for (let i = 0; i < row.length; i++) {
+      if (row[i] === "F") higher = Math.floor( higher - (higher-lower) / 2 )
+      if (row[i] === "B") lower = Math.ceil( lower + (higher-lower) / 2)
+    }
+    return lower
+  }
+
+  function calculateCol(col) {
+    let lower = 0
+    let higher = 7
+    for (let i = 0; i < col.length; i++) {
+      if (col[i] === "L") higher = Math.floor( higher - (higher-lower) / 2 )
+      if (col[i] === "R") lower = Math.ceil( lower + (higher-lower) / 2)
+    }
+    return lower
+  }
+
+  const allSeats = []
+  let myID
+
+  for (let i = 0; i < parsedData.length; i++) {
+    const row = calculateRow(parsedData[i].substring(0,7))
+    const col = calculateCol(parsedData[i].substring(7))
+    const id = row * 8 + col
+    // allSeats[row][col] = true
+    allSeats[id] = true
+  }
+
+  for (let i = 1; i < allSeats.length-1; i++) {
+    if ( !allSeats[i] && (allSeats[i-1] && allSeats[i+1]) ) {
+      myID = i
+      break
+    }
+  }
+
+  console.log(myID)
 })
