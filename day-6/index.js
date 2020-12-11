@@ -62,5 +62,76 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     count += Object.keys(tracker).length
   }
 
+  // console.log(count)
+})
+
+/*
+--- Part Two ---
+As you finish the last group's customs declaration, you notice that you misread one word in the instructions:
+
+You don't need to identify the questions to which anyone answered "yes"; you need to identify the questions to which everyone answered "yes"!
+
+Using the same example as above:
+
+abc
+
+a
+b
+c
+
+ab
+ac
+
+a
+a
+a
+a
+
+b
+This list represents answers from five groups:
+
+In the first group, everyone (all 1 person) answered "yes" to 3 questions: a, b, and c.
+In the second group, there is no question to which everyone answered "yes".
+In the third group, everyone answered yes to only 1 question, a. Since some people did not answer "yes" to b or c, they don't count.
+In the fourth group, everyone answered yes to only 1 question, a.
+In the fifth group, everyone (all 1 person) answered "yes" to 1 question, b.
+In this example, the sum of these counts is 3 + 0 + 1 + 1 + 1 = 6.
+
+For each group, count the number of questions to which everyone answered "yes". What is the sum of those counts?
+*/
+
+fs.readFile('./input.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.log(err)
+  }
+  const parsedData = data.split('\n\n')
+  for (let i = 0; i < parsedData.length; i++) {
+    parsedData[i] = parsedData[i].split('\n')
+  }
+
+  // weird data input format where very last element is an empty string (this does affect my counting logic)
+  let lastElement = parsedData.length-1
+  if (parsedData[lastElement][parsedData[lastElement].length-1].length === 0) parsedData[lastElement].pop()
+
+  let count = 0
+
+  for (let i = 0; i < parsedData.length; i++) {
+    const tracker = {}
+    for (let j = 0; j < parsedData[i].length; j++) {
+      for (let k = 0; k < parsedData[i][j].length; k++) {
+        if (!tracker.hasOwnProperty(parsedData[i][j][k])) {
+          tracker[parsedData[i][j][k]] = 1
+        } else {
+          tracker[parsedData[i][j][k]]++
+        }
+      }
+    }
+
+    const yesses = Object.values(tracker)
+    for (let j = 0; j < yesses.length; j++) {
+      if (yesses[j] === parsedData[i].length) count++
+    }
+  }
+
   console.log(count)
 })
