@@ -48,10 +48,12 @@ class Graph {
 
 }
 
-fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
+fs.readFile('./input.txt', 'utf8', (err, data) => {
   if (err) console.log(err)
 
   const g = new Graph()
+
+  const YOUR_BAG = 'shiny gold'
 
   const parsedData = data.split('\n')
 
@@ -79,5 +81,43 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
     }
   }
 
-  console.log(g.adjList)
+  /*
+  {
+    'light red': [ [ '1', 'bright white' ], [ '2', 'muted yellow' ] ],
+    'dark orange': [ [ '3', 'bright white' ], [ '4', 'muted yellow' ] ],
+    'bright white': [ [ '1', 'shiny gold' ] ],
+    'muted yellow': [ [ '2', 'shiny gold' ], [ '9', 'faded blue' ] ],
+    'shiny gold': [ [ '1', 'dark olive' ], [ '2', 'vibrant plum' ] ],
+    'dark olive': [ [ '3', 'faded blue' ], [ '4', 'dotted black' ] ],
+    'vibrant plum': [ [ '5', 'faded blue' ], [ '6', 'dotted black' ] ],
+    'faded blue': [],
+    'dotted black': []
+  }
+  */
+
+  const visitedTowardsYourBag = {}
+
+  function dfs(currentBag, yourBag, tracker) {
+
+    if (currentBag === YOUR_BAG) {
+      for (let j = 0; j < tracker.length; j++) {
+        visitedTowardsYourBag[tracker[j]] = true
+      }
+      return
+    }
+
+    if (g.adjList[currentBag].length === 0) return
+
+    for (let i = 0; i < g.adjList[currentBag].length; i++) {
+      tracker.push(currentBag)
+      dfs(g.adjList[currentBag][i][1], YOUR_BAG, tracker)
+      tracker.pop()
+    }
+  }
+
+  for (let key in g.adjList) {
+    dfs(key, YOUR_BAG, [])
+  }
+
+  console.log(Object.keys(visitedTowardsYourBag).length)
 })
