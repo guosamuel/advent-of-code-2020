@@ -37,9 +37,15 @@ class Graph {
     this.adjList = {}
   }
 
-  addVertex(vertx) {
+  addVertex(vertex) {
     if (!this.adjList.hasOwnProperty(vertex)) this.adjList[vertex] = []
   }
+
+  addEdge(vertex, edge) {
+    if (!this.adjList.hasOwnProperty(vertex)) this.addVertex(vertex)
+    this.adjList[vertex].push(edge)
+  }
+
 }
 
 fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
@@ -53,7 +59,25 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
 
   for (let i = 0; i < parsedData.length; i++) {
     parsedData[i] = parsedData[i].split(" contain ")
+    const sanitizedVertex = parsedData[i][0].split(" ")
+    sanitizedVertex.pop()
+    const vertex = sanitizedVertex.join(" ")
+    g.addVertex(vertex)
+
+    if (parsedData[i][1] === 'no other bags.') continue
+
+    const bagContents = parsedData[i][1].split(", ")
+    for (let j = 0; j < bagContents.length; j++) {
+      const bagContentData = bagContents[j].split(" ")
+      const edge = []
+      edge[0] = bagContentData[0]
+      bagContentData.pop()
+      bagContentData.shift()
+      const bag = bagContentData.join(" ")
+      edge[1] = bag
+      g.addEdge(vertex,edge)
+    }
   }
 
-  console.log(parsedData)
+  console.log(g.adjList)
 })
