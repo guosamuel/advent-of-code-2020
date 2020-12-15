@@ -150,7 +150,7 @@ In this example, a single shiny gold bag must contain 126 other bags.
 How many individual bags are required inside your single shiny gold bag?
 */
 
-fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
+fs.readFile('./input.txt', 'utf8', (err, data) => {
   if (err) console.log(err)
 
   const g = new Graph()
@@ -196,14 +196,9 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
     'dotted black': []
   }
   */
-  let count = 0
 
   function bagCount(bag) {
-    console.log("at the top of the function", bag)
-    if (g.adjList[bag].length === 0) {
-      console.log("in the base case", bag)
-      return 1
-    }
+    if (g.adjList[bag].length === 0) return 1
     /*
     [ '1', 'dark olive' ]
     [ '3', 'faded blue' ]
@@ -212,21 +207,16 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
     [ '5', 'faded blue' ]
     [ '6', 'dotted black' ]
     */
-    for (let k = 0; k < g.adjList[bag].length; k++) {
-      console.log(g.adjList[bag], k)
-      let currentBag = g.adjList[bag][k]
-      // console.log("CURRENT BAG", currentBag[1])
-      // console.log("BEFORE ADDING", count)
-      count += Number(currentBag[0]) * bagCount(currentBag[1])
-      // console.log("RETURN FUNCTION FOR THE CALL", bagCount(currentBag[1]))
-      // console.log("CURRENT NUMBER RIGHT AFTER ADDING", currentBag[0])
-      // console.log("JUST FINISHED ADDING", currentBag[1])
+    let count = 0
 
-      console.log(count)
+    for (let k = 0; k < g.adjList[bag].length; k++) {
+      let currentBag = g.adjList[bag][k]
+      count += Number(currentBag[0]) * bagCount(currentBag[1])
+      if (bag === YOUR_BAG) count += Number(currentBag[0])
     }
+
+    return count
   }
 
-  bagCount(YOUR_BAG)
-
-  console.log(count)
+  console.log(bagCount(YOUR_BAG))
 })
