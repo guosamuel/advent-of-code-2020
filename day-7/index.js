@@ -198,21 +198,16 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
   */
 
   function bagCount(bag) {
-    if (g.adjList[bag].length === 0) return 1
-    /*
-    [ '1', 'dark olive' ]
-    [ '3', 'faded blue' ]
-    [ '4', 'dotted black' ]
-    [ '2', 'vibrant plum' ]
-    [ '5', 'faded blue' ]
-    [ '6', 'dotted black' ]
-    */
+    // Returns 0 because there are no bags to be stored in the current bag (no edges)
+    // This is not 1 because addition of Number(currentBag[0]) takes into the account of the current bag itself
+    if (g.adjList[bag].length === 0) return 0
+
     let count = 0
 
     for (let k = 0; k < g.adjList[bag].length; k++) {
       let currentBag = g.adjList[bag][k]
-      count += Number(currentBag[0]) * bagCount(currentBag[1])
-      if (bag === YOUR_BAG) count += Number(currentBag[0])
+      // The addition of Number(currentBag[0]) includes the bag itself that stores all of the other bags
+      count += Number(currentBag[0]) * bagCount(currentBag[1]) + Number(currentBag[0])
     }
 
     return count
