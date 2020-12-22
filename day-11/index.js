@@ -206,5 +206,297 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     }
   }
 
+  // console.log(occupiedSeatCount)
+})
+
+/*
+--- Part Two ---
+As soon as people start to arrive, you realize your mistake. People don't just care about adjacent seats - they care about the first seat they can see in each of those eight directions!
+
+Now, instead of considering just the eight immediately adjacent seats, consider the first seat in each of those eight directions. For example, the empty seat below would see eight occupied seats:
+
+.......#.
+...#.....
+.#.......
+.........
+..#L....#
+....#....
+.........
+#........
+...#.....
+The leftmost empty seat below would only see one empty seat, but cannot see any of the occupied ones:
+
+.............
+.L.L.#.#.#.#.
+.............
+The empty seat below would see no occupied seats:
+
+.##.##.
+#.#.#.#
+##...##
+...L...
+##...##
+#.#.#.#
+.##.##.
+Also, people seem to be more tolerant than you expected: it now takes five or more visible occupied seats for an occupied seat to become empty (rather than four or more from the previous rules). The other rules still apply: empty seats that see no occupied seats become occupied, seats matching no rule don't change, and floor never changes.
+
+Given the same starting layout as above, these new rules cause the seating area to shift around as follows:
+
+L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
+#.##.##.##
+#######.##
+#.#.#..#..
+####.##.##
+#.##.##.##
+#.#####.##
+..#.#.....
+##########
+#.######.#
+#.#####.##
+#.LL.LL.L#
+#LLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLLL.L
+#.LLLLL.L#
+#.L#.##.L#
+#L#####.LL
+L.#.#..#..
+##L#.##.##
+#.##.#L.##
+#.#####.#L
+..#.#.....
+LLL####LL#
+#.L#####.L
+#.L####.L#
+#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##LL.LL.L#
+L.LL.LL.L#
+#.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLL#.L
+#.L#LL#.L#
+#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##L#.#L.L#
+L.L#.#L.L#
+#.L####.LL
+..#.#.....
+LLL###LLL#
+#.LLLLL#.L
+#.L#LL#.L#
+#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##L#.#L.L#
+L.L#.LL.L#
+#.LLLL#.LL
+..#.L.....
+LLL###LLL#
+#.LLLLL#.L
+#.L#LL#.L#
+Again, at this point, people stop shifting around and the seating area reaches equilibrium. Once this occurs, you count 26 occupied seats.
+
+Given the new visibility method and the rule change for occupied seats becoming empty, once equilibrium is reached, how many seats end up occupied?
+
+
+*/
+
+fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
+  if (err) console.log(err)
+
+  const parsedData = data.split('\n')
+
+  if (parsedData[parsedData.length-1].length === 0) parsedData.pop()
+
+  for (let i = 0; i < parsedData.length; i++) {
+    parsedData[i] = parsedData[i].split('')
+  }
+
+  function seatRecursion(array) {
+    const newArray = []
+
+    for (let i = 0; i < array.length; i++) {
+      newArray.push([])
+    }
+
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < array[i].length; j++) {
+
+        if (array[i][j] === 'L') {
+          let areThereOccupiedDirectionalSeats = false
+
+          let x = i
+          let y = j
+          const limit = Math.max( (array.length-1) - y, y, (array[0].length-1) - x, x )
+
+          let delta = 1
+
+          while (delta <= limit && areThereOccupiedDirectionalSeats === false) {
+
+            // north
+            if (y - delta >= 0 && array[y-delta][x] === '#') areThereOccupiedDirectionalSeats = true
+
+            // east
+            if (x + delta < array[x].length && array[y][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+
+            // south
+            if (y + delta < array.length && array[y+delta][x] === '#') areThereOccupiedDirectionalSeats = true
+
+            // west
+            if (x - delta >= 0 && array[y][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+
+            // north-east
+            if (y - delta >= 0 && x + delta < array[x].length && array[y-delta][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+
+            // south-east
+            if (y + delta < array.length && x + delta < array[x].length && array[y+delta][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+
+            // south-west
+            if (y + delta < array.length && x - delta >= 0 && array[y+delta][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+
+            // north-west
+            if (y - delta >= 0 && x - delta >= 0 && array[y-delta][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+
+            delta++
+          }
+
+          if (!areThereOccupiedDirectionalSeats) {
+            newArray[i][j] = '#'
+          } else {
+            newArray[i][j] = array[i][j]
+          }
+
+        } else if (array[i][j] === '#') {
+          let adjacentOccupiedSeatsCount = 0
+
+          const directionHasOccupiedSeat = {}
+          let x = i
+          let y = j
+          const limit = Math.max( (array.length-1) - y, y, (array[0].length-1) - x, x )
+
+          let delta = 1
+
+          while (delta <= limit && adjacentOccupiedSeatsCount < 5) {
+
+            // north
+            if (!directionHasOccupiedSeat['north'] && y - delta >= 0 && array[y-delta][x] === '#') {
+              directionHasOccupiedSeat['north'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // east
+            if (!directionHasOccupiedSeat['east'] && x + delta < array[x].length && array[y][x+delta] === '#') {
+              directionHasOccupiedSeat['east'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // south
+            if (!directionHasOccupiedSeat['south'] && y + delta < array.length && array[y+delta][x] === '#') {
+              directionHasOccupiedSeat['south'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // west
+            if (!directionHasOccupiedSeat['west'] && x - delta >= 0 && array[y][x-delta] === '#') {
+              directionHasOccupiedSeat['west'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // north-east
+            if (!directionHasOccupiedSeat['north-east'] && y - delta >= 0 && x + delta < array[x].length && array[y-delta][x+delta] === '#') {
+              directionHasOccupiedSeat['north-east'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // south-east
+            if (!directionHasOccupiedSeat['south-east'] && y + delta < array.length && x + delta < array[x].length && array[y+delta][x+delta] === '#') {
+              directionHasOccupiedSeat['south-east'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // south-west
+            if (!directionHasOccupiedSeat['south-west'] && y + delta < array.length && x - delta >= 0 && array[y+delta][x-delta] === '#') {
+              directionHasOccupiedSeat['south-west'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            // north-west
+            if (!directionHasOccupiedSeat['north-west'] && y - delta >= 0 && x - delta >= 0 && array[y-delta][x-delta] === '#') {
+              directionHasOccupiedSeat['north-west'] = true
+              adjacentOccupiedSeatsCount++
+            }
+
+            delta++
+          }
+
+          if (adjacentOccupiedSeatsCount === 5) {
+            newArray[i][j] = 'L'
+          } else {
+            newArray[i][j] = array[i][j]
+          }
+
+        } else {
+          newArray[i][j] = array[i][j]
+        }
+      }
+    }
+
+    const copy = [...newArray]
+    for (let i = 0; i < copy.length; i++) {
+      copy[i] = copy[i].join("")
+    }
+    copy.push('\n')
+    console.log(copy.join('\n'))
+
+    if (isSameArray(array, newArray)) {
+      return array
+    } else {
+      return seatRecursion(newArray)
+    }
+  }
+
+  function isSameArray(array1, array2) {
+
+    for (let i = 0; i < array1.length; i++) {
+      for (let j = 0; j < array1[i].length; j++) {
+        if (array1[i][j] === array2[i][j]) {
+          continue
+        } else {
+          return false
+        }
+      }
+    }
+
+    return true
+  }
+
+  const finalSeating = seatRecursion(parsedData)
+
+  let occupiedSeatCount = 0
+
+  for (let i = 0; i < finalSeating.length; i++) {
+    for (let j = 0; j < finalSeating[i].length; j++) {
+      if (finalSeating[i][j] === '#') occupiedSeatCount++
+    }
+  }
+
   console.log(occupiedSeatCount)
 })
