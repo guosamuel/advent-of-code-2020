@@ -319,7 +319,7 @@ Given the new visibility method and the rule change for occupied seats becoming 
 
 */
 
-fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
+fs.readFile('./input.txt', 'utf8', (err, data) => {
   if (err) console.log(err)
 
   const parsedData = data.split('\n')
@@ -343,37 +343,62 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
         if (array[i][j] === 'L') {
           let areThereOccupiedDirectionalSeats = false
 
-          let x = i
-          let y = j
-          const limit = Math.max( (array.length-1) - y, y, (array[0].length-1) - x, x )
+          const directionHasOccupiedSeat = {}
+          let x = j
+          let y = i
+          const limit = Math.max( (array.length-1) - y, y, (array[y].length-1) - x, x )
 
           let delta = 1
 
-          while (delta <= limit && areThereOccupiedDirectionalSeats === false) {
+          while (delta <= limit && !areThereOccupiedDirectionalSeats) {
 
             // north
-            if (y - delta >= 0 && array[y-delta][x] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['north'] && y - delta >= 0) {
+              if (array[y-delta][x] !== '.') directionHasOccupiedSeat['north'] = true
+              if (array[y-delta][x] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // east
-            if (x + delta < array[x].length && array[y][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['east'] && x + delta < array[y].length) {
+              if (array[y][x+delta] !== '.') directionHasOccupiedSeat['east'] = true
+              if (array[y][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // south
-            if (y + delta < array.length && array[y+delta][x] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['south'] && y + delta < array.length) {
+              if (array[y+delta][x] !== '.') directionHasOccupiedSeat['south'] = true
+              if (array[y+delta][x] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // west
-            if (x - delta >= 0 && array[y][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['west'] && x - delta >= 0) {
+              if (array[y][x-delta] !== '.') directionHasOccupiedSeat['west'] = true
+              if (array[y][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // north-east
-            if (y - delta >= 0 && x + delta < array[x].length && array[y-delta][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['north-east'] && y - delta >= 0 && x + delta < array[y].length) {
+              if (array[y-delta][x+delta] !== '.') directionHasOccupiedSeat['north-east'] = true
+              if (array[y-delta][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // south-east
-            if (y + delta < array.length && x + delta < array[x].length && array[y+delta][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['south-east'] && y + delta < array.length && x + delta < array[y].length) {
+              if (array[y+delta][x+delta] !== '.') directionHasOccupiedSeat['south-east'] = true
+              if (array[y+delta][x+delta] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // south-west
-            if (y + delta < array.length && x - delta >= 0 && array[y+delta][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['south-west'] && y + delta < array.length && x - delta >= 0) {
+              if (array[y+delta][x-delta] !== '.') directionHasOccupiedSeat['south-west'] = true
+              if (array[y+delta][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             // north-west
-            if (y - delta >= 0 && x - delta >= 0 && array[y-delta][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+            if (!directionHasOccupiedSeat['north-west'] && y - delta >= 0 && x - delta >= 0) {
+              if (array[y-delta][x-delta] !== '.') directionHasOccupiedSeat['north-west'] = true
+              if (array[y-delta][x-delta] === '#') areThereOccupiedDirectionalSeats = true
+            }
 
             delta++
           }
@@ -388,14 +413,13 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
           let adjacentOccupiedSeatsCount = 0
 
           const directionHasOccupiedSeat = {}
-          let x = i
-          let y = j
-          const limit = Math.max( (array.length-1) - y, y, (array[0].length-1) - x, x )
+          let x = j
+          let y = i
+          const limit = Math.max( (array.length-1) - y, y, (array[y].length-1) - x, x )
 
           let delta = 1
 
           while (delta <= limit && adjacentOccupiedSeatsCount < 5) {
-
             // north
             if (!directionHasOccupiedSeat['north'] && y - delta >= 0) {
               if (array[y-delta][x] !== '.') directionHasOccupiedSeat['north'] = true
@@ -403,7 +427,7 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
             }
 
             // east
-            if (!directionHasOccupiedSeat['east'] && x + delta < array[x].length) {
+            if (!directionHasOccupiedSeat['east'] && x + delta < array[y].length) {
               if (array[y][x+delta] !== '.') directionHasOccupiedSeat['east'] = true
               if (array[y][x+delta] === '#') adjacentOccupiedSeatsCount++
             }
@@ -421,13 +445,13 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
             }
 
             // north-east
-            if (!directionHasOccupiedSeat['north-east'] && y - delta >= 0 && x + delta < array[x].length) {
+            if (!directionHasOccupiedSeat['north-east'] && y - delta >= 0 && x + delta < array[y].length) {
               if (array[y-delta][x+delta] !== '.') directionHasOccupiedSeat['north-east'] = true
               if (array[y-delta][x+delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             // south-east
-            if (!directionHasOccupiedSeat['south-east'] && y + delta < array.length && x + delta < array[x].length) {
+            if (!directionHasOccupiedSeat['south-east'] && y + delta < array.length && x + delta < array[y].length) {
               if (array[y+delta][x+delta] !== '.') directionHasOccupiedSeat['south-east'] = true
               if (array[y+delta][x+delta] === '#') adjacentOccupiedSeatsCount++
             }
@@ -447,7 +471,7 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
             delta++
           }
 
-          if (adjacentOccupiedSeatsCount === 5) {
+          if (adjacentOccupiedSeatsCount >= 5) {
             newArray[i][j] = 'L'
           } else {
             newArray[i][j] = array[i][j]
@@ -459,12 +483,14 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
       }
     }
 
+    /*
     const copy = [...newArray]
     for (let i = 0; i < copy.length; i++) {
       copy[i] = copy[i].join("")
     }
     copy.push('\n')
     console.log(copy.join('\n'))
+    */
 
     if (isSameArray(array, newArray)) {
       return array
