@@ -87,5 +87,161 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
 
   const finalDistance = Math.abs( distances['N'] - distances['S'] ) + Math.abs( distances['E'] - distances['W'] )
 
+  // console.log(finalDistance)
+})
+
+/*
+--- Part Two ---
+Before you can give the destination to the captain, you realize that the actual action meanings were printed on the back of the instructions the whole time.
+
+Almost all of the actions indicate how to move a waypoint which is relative to the ship's position:
+
+Action N means to move the waypoint north by the given value.
+Action S means to move the waypoint south by the given value.
+Action E means to move the waypoint east by the given value.
+Action W means to move the waypoint west by the given value.
+Action L means to rotate the waypoint around the ship left (counter-clockwise) the given number of degrees.
+Action R means to rotate the waypoint around the ship right (clockwise) the given number of degrees.
+Action F means to move forward to the waypoint a number of times equal to the given value.
+The waypoint starts 10 units east and 1 unit north relative to the ship. The waypoint is relative to the ship; that is, if the ship moves, the waypoint moves with it.
+
+For example, using the same instructions as above:
+
+F10 moves the ship to the waypoint 10 times (a total of 100 units east and 10 units north), leaving the ship at east 100, north 10. The waypoint stays 10 units east and 1 unit north of the ship.
+N3 moves the waypoint 3 units north to 10 units east and 4 units north of the ship. The ship remains at east 100, north 10.
+F7 moves the ship to the waypoint 7 times (a total of 70 units east and 28 units north), leaving the ship at east 170, north 38. The waypoint stays 10 units east and 4 units north of the ship.
+R90 rotates the waypoint around the ship clockwise 90 degrees, moving it to 4 units east and 10 units south of the ship. The ship remains at east 170, north 38.
+F11 moves the ship to the waypoint 11 times (a total of 44 units east and 110 units south), leaving the ship at east 214, south 72. The waypoint stays 4 units east and 10 units south of the ship.
+After these operations, the ship's Manhattan distance from its starting position is 214 + 72 = 286.
+
+Figure out where the navigation instructions actually lead. What is the Manhattan distance between that location and the ship's starting position?
+*/
+
+fs.readFile('./input.txt', 'utf8', (err, data) => {
+  if (err) console.log(err)
+
+  const parsedData = data.split('\n')
+
+  if (parsedData[parsedData.length-1].length === 0) parsedData.pop()
+
+  const shipDistances = {
+    'N': 0,
+    'S': 0,
+    'E': 0,
+    'W': 0
+  }
+
+  const waypointDistances = {
+    'N': 1,
+    'S': 0,
+    'E': 10,
+    'W': 0
+  }
+
+  const waypointDirections = [ 'N', 'E', 'S', 'W' ]
+  let waypointDirectionPointer1 = 1
+  let waypointDirectionPointer2 = 0
+
+
+  const changeDirection = {
+    'L': degrees => turnLeft(degrees),
+    'R': degrees => turnRight(degrees)
+  }
+
+  function turnLeft(degrees) {
+    let count = Number(degrees) / 90
+    let tempWaypointDistance1 = waypointDistances[waypointDirections[waypointDirectionPointer1]]
+    let tempWaypointDistance2 = waypointDistances[waypointDirections[waypointDirectionPointer2]]
+
+    waypointDistances[waypointDirections[waypointDirectionPointer1]] = 0
+    waypointDistances[waypointDirections[waypointDirectionPointer2]] = 0
+
+    waypointDirectionPointer1 -= count
+    waypointDirectionPointer2 -= count
+    if (waypointDirectionPointer1 < 0) waypointDirectionPointer1 += waypointDirections.length
+    if (waypointDirectionPointer2 < 0) waypointDirectionPointer2 += waypointDirections.length
+
+    waypointDistances[waypointDirections[waypointDirectionPointer1]] = tempWaypointDistance1
+    waypointDistances[waypointDirections[waypointDirectionPointer2]] = tempWaypointDistance2
+
+  }
+
+  function turnRight(degrees) {
+    let count = Number(degrees) / 90
+    let tempWaypointDistance1 = waypointDistances[waypointDirections[waypointDirectionPointer1]]
+    let tempWaypointDistance2 = waypointDistances[waypointDirections[waypointDirectionPointer2]]
+
+    waypointDistances[waypointDirections[waypointDirectionPointer1]] = 0
+    waypointDistances[waypointDirections[waypointDirectionPointer2]] = 0
+
+    waypointDirectionPointer1 += count
+    waypointDirectionPointer2 += count
+    if (waypointDirectionPointer1 > waypointDirections.length - 1) waypointDirectionPointer1 -= waypointDirections.length
+    if (waypointDirectionPointer2 > waypointDirections.length - 1) waypointDirectionPointer2 -= waypointDirections.length
+
+    waypointDistances[waypointDirections[waypointDirectionPointer1]] = tempWaypointDistance1
+    waypointDistances[waypointDirections[waypointDirectionPointer2]] = tempWaypointDistance2
+  }
+
+  for (let i = 0; i < parsedData.length; i++) {
+    let action = parsedData[i][0]
+    let value = parsedData[i].substring(1)
+
+    if (action === 'N') {
+      if (waypointDistances['S'] >= Number(value)) {
+        waypointDistances['S'] -= Number(value)
+      } else {
+        waypointDistances['N'] += Number(value) - waypointDistances['S']
+        waypointDistances['S'] = 0
+        if (waypointDirectionPointer1 === 2) waypointDirectionPointer1 = 0
+        if (waypointDirectionPointer2 === 2) waypointDirectionPointer2 = 0
+      }
+    }
+
+    if (action === 'S') {
+      if (waypointDistances['N'] >= Number(value)) {
+        waypointDistances['N'] -= Number(value)
+      } else {
+        waypointDistances['S'] += Number(value) - waypointDistances['N']
+        waypointDistances['N'] = 0
+        if (waypointDirectionPointer1 === 0) waypointDirectionPointer1 = 2
+        if (waypointDirectionPointer2 === 0) waypointDirectionPointer2 = 2
+      }
+    }
+
+    if (action === 'E') {
+      if (waypointDistances['W'] >= Number(value)) {
+        waypointDistances['W'] -= Number(value)
+      } else {
+        waypointDistances['E'] += Number(value) - waypointDistances['W']
+        waypointDistances['W'] = 0
+        if (waypointDirectionPointer1 === 3) waypointDirectionPointer1 = 1
+        if (waypointDirectionPointer2 === 3) waypointDirectionPointer2 = 1
+      }
+    }
+
+    if (action === 'W') {
+      if (waypointDistances['E'] >= Number(value)) {
+        waypointDistances['E'] -= Number(value)
+      } else {
+        waypointDistances['W'] += Number(value) - waypointDistances['E']
+        waypointDistances['E'] = 0
+        if (waypointDirectionPointer1 === 1) waypointDirectionPointer1 = 3
+        if (waypointDirectionPointer2 === 1) waypointDirectionPointer2 = 3
+      }
+    }
+
+    if (action === 'L' || action === 'R')  changeDirection[action](value)
+
+    if (action === 'F') {
+      shipDistances[waypointDirections[waypointDirectionPointer1]] += Number(value) * waypointDistances[waypointDirections[waypointDirectionPointer1]]
+      shipDistances[waypointDirections[waypointDirectionPointer2]] += Number(value) * waypointDistances[waypointDirections[waypointDirectionPointer2]]
+    }
+
+    console.log(shipDistances, waypointDistances)
+  }
+
+  const finalDistance = Math.abs( shipDistances['N'] - shipDistances['S'] ) + Math.abs( shipDistances['E'] - shipDistances['W'] )
+
   console.log(finalDistance)
 })
