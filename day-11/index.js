@@ -397,51 +397,51 @@ fs.readFile('./dummy-input.txt', 'utf8', (err, data) => {
           while (delta <= limit && adjacentOccupiedSeatsCount < 5) {
 
             // north
-            if (!directionHasOccupiedSeat['north'] && y - delta >= 0 && array[y-delta][x] === '#') {
-              directionHasOccupiedSeat['north'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['north'] && y - delta >= 0) {
+              if (array[y-delta][x] !== '.') directionHasOccupiedSeat['north'] = true
+              if (array[y-delta][x] === '#') adjacentOccupiedSeatsCount++
             }
 
             // east
-            if (!directionHasOccupiedSeat['east'] && x + delta < array[x].length && array[y][x+delta] === '#') {
-              directionHasOccupiedSeat['east'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['east'] && x + delta < array[x].length) {
+              if (array[y][x+delta] !== '.') directionHasOccupiedSeat['east'] = true
+              if (array[y][x+delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             // south
-            if (!directionHasOccupiedSeat['south'] && y + delta < array.length && array[y+delta][x] === '#') {
-              directionHasOccupiedSeat['south'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['south'] && y + delta < array.length) {
+              if (array[y+delta][x] !== '.') directionHasOccupiedSeat['south'] = true
+              if (array[y+delta][x] === '#') adjacentOccupiedSeatsCount++
             }
 
             // west
-            if (!directionHasOccupiedSeat['west'] && x - delta >= 0 && array[y][x-delta] === '#') {
-              directionHasOccupiedSeat['west'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['west'] && x - delta >= 0) {
+              if (array[y][x-delta] !== '.') directionHasOccupiedSeat['west'] = true
+              if (array[y][x-delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             // north-east
-            if (!directionHasOccupiedSeat['north-east'] && y - delta >= 0 && x + delta < array[x].length && array[y-delta][x+delta] === '#') {
-              directionHasOccupiedSeat['north-east'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['north-east'] && y - delta >= 0 && x + delta < array[x].length) {
+              if (array[y-delta][x+delta] !== '.') directionHasOccupiedSeat['north-east'] = true
+              if (array[y-delta][x+delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             // south-east
-            if (!directionHasOccupiedSeat['south-east'] && y + delta < array.length && x + delta < array[x].length && array[y+delta][x+delta] === '#') {
-              directionHasOccupiedSeat['south-east'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['south-east'] && y + delta < array.length && x + delta < array[x].length) {
+              if (array[y+delta][x+delta] !== '.') directionHasOccupiedSeat['south-east'] = true
+              if (array[y+delta][x+delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             // south-west
-            if (!directionHasOccupiedSeat['south-west'] && y + delta < array.length && x - delta >= 0 && array[y+delta][x-delta] === '#') {
-              directionHasOccupiedSeat['south-west'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['south-west'] && y + delta < array.length && x - delta >= 0) {
+              if (array[y+delta][x-delta] !== '.') directionHasOccupiedSeat['south-west'] = true
+              if (array[y+delta][x-delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             // north-west
-            if (!directionHasOccupiedSeat['north-west'] && y - delta >= 0 && x - delta >= 0 && array[y-delta][x-delta] === '#') {
-              directionHasOccupiedSeat['north-west'] = true
-              adjacentOccupiedSeatsCount++
+            if (!directionHasOccupiedSeat['north-west'] && y - delta >= 0 && x - delta >= 0) {
+              if (array[y-delta][x-delta] !== '.') directionHasOccupiedSeat['north-west'] = true
+              if (array[y-delta][x-delta] === '#') adjacentOccupiedSeatsCount++
             }
 
             delta++
