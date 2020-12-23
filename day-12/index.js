@@ -72,7 +72,7 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
   function turnRight(degrees) {
     let count = Number(degrees) / 90
     directionPointer += count
-    if (directionPointer > directions.length - 1) directionPointer = directions.length - directionPointer
+    if (directionPointer > directions.length - 1) directionPointer -= directions.length
   }
 
   for (let i = 0; i < parsedData.length; i++) {
@@ -85,7 +85,7 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
 
   }
 
-  const finalDistance = Math.abs( distances['N'] - distances['S'] ) + Math.abs( distances['W'] - distances['E'] )
+  const finalDistance = Math.abs( distances['N'] - distances['S'] ) + Math.abs( distances['E'] - distances['W'] )
 
   console.log(finalDistance)
 })
